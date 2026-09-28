@@ -5,6 +5,8 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import NearestCentroid
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import pairwise_distances
+
 
 # 1. Fetch the Ionosphere dataset from OpenML
 print(" Fetching the Ionosphere dataset...")
@@ -63,3 +65,23 @@ print("\n---  LIVE RADAR PREDICTION REPORT  ---")
 for i, pred in enumerate(predictions):
     signal_type = "GOOD SIGNAL (g) " if pred == 'g' else "BAD SIGNAL (b) "
     print(f" Object {i+1}: The model predicts this is a {signal_type}")
+
+
+
+# 1. Compute the exact raw distances from our new signals to the two trained centers
+# This creates a perfect grid: [Distance to Bad, Distance to Good]
+raw_distances = pairwise_distances(new_signals_scaled, model.centroids_)
+
+print("\n---  RAW GEOMETRIC DISTANCE METRICS  ---")
+
+# Print the scores for Object 1 (Mystery Signal A)
+print(f"Object 1 (High/Steady Signal):")
+print(f"   -> Distance to 'Bad' Center (b) : {raw_distances[0][0]:.2f}")
+print(f"   -> Distance to 'Good' Center (g): {raw_distances[0][1]:.2f}")
+print(f"    Decision: It picks 'Good' because it has the shorter distance!\n")
+
+# Print the scores for Object 2 (Low/Chaotic Signal)
+print(f"Object 2 (Negative/Chaotic Signal):")
+print(f"   -> Distance to 'Bad' Center (b) : {raw_distances[1][0]:.2f}")
+print(f"   -> Distance to 'Good' Center (g): {raw_distances[1][1]:.2f}")
+print(f"    Decision: It picks 'Bad' because it has the shorter distance!")
